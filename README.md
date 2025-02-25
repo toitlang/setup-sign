@@ -3,8 +3,8 @@
 Most of the instructions come from https://teonite.com/blog/windows-codesign-certum-hsm/
 
 ```
-sudo apt install opensc opensc-pkcs11 libpcsclite-dev pcscd libacsccid1 \
-    libengine-pkcs11-openssl osslsigncode
+sudo pacman -S pcsclite pcsc-tools opensc acsccid libp11 ccid
+yay -S osslsigncode
 ```
 
 ```
@@ -12,17 +12,7 @@ sudo systemctl enable pcscd.service
 sudo systemctl enable pcscd.socket
 ```
 
-Also recommended:
-```
-sudo apt install pcsc-tools
-```
-
-We also installed libccid. Not 100% sure it was necessary.
-```
-sudo apt install libccid
-```
-
-The smart-card access on Ubuntu is guarded by policy-kit.
+The smart-card access is guarded by policy-kit.
 I had to add the 50-smartcard-access.rules file together with the group 'smartcard-access':
 ```
 sudo groupadd smartcard-access
@@ -45,12 +35,26 @@ chmod +x proCertumCardManager-2.2.11-x86_64-ubuntu.bin
 ./proCertumCardManager-2.2.11-x86_64-ubuntu.bin --keep --target $PWD/manager
 ```
 
-------
-Not done yet. Probably not needed.
+The only file we need from the extracted manager is `sc30pkcs11-3.0.6.68-MS.so`.
 
-Copy the `manager/cryptoCertum3PKCS-3.0.6.69-MS.so` to `/usr/lib/libcryptoCertum3PKCS.so`
-and symlink it to `/usr/lib/libcrypto3PKCS.so`
+Use it to get the key-id:
 ```
-sudo cp manager/cryptoCertum3PKCS-3.0.6.69-MS.so /usr/lib/libcryptoCertum3PKCS.so
-sudo ln -s /usr/lib/usr/lib/libcryptoCertum3PKCS.so /usr/lib/libcrypto3PKCS.so
+pkcs11-tool --module $PWD/manager/sc30pkcs11-3.0.6.68-MS.so --list-objects
+```
+If you don't get any public key information (just a "Using slot 0 with a present token (0x0)") then the
+dynamic library wasn't used. Maybe the wrong dynamic library?
+
+Get the certificate.pem from your account at Certum.
+
+Run osslsigncode as follows:
+```
+osslsigncode sign \
+  -pkcs11module $PWD/manager/sc30pkcs11-3.0.6.68-MS.so \
+  -certs certificate.pem \
+  -key d7c78f453acfaa35791f0232f351465c6d16ab94 \
+  -pass "$CERT_PIN" \
+  -h sha256 \
+  -t http://time.certum.pl/ \
+  -in unsigned.exe \
+  -out signed.exe
 ```
