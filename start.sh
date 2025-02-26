@@ -11,4 +11,4 @@ $script_dir/server \
     --verbosity-level=debug \
     --password="$password" \
     --port=9876 \
-    bash certum.sh pin.secret "$script_dir/manager/sc30pkcs11-3.0.6.68-MS.so" $certificate $key
+    bash certum.sh pin.secret "$script_dir/manager/sc30pkcs11-3.0.6.68-MS.so" "$certificate" $key
