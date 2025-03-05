@@ -4,28 +4,47 @@
 Set up the cloudflare tunnel to contact our signing service on
 port 9876 (`http://localhost:9876`).
 
+### Install cloudflared
+
+sudo pacman -S cloudflared
+
+Make sure to enable/start the service. (Not 100% if necessary,
+or if calling `cloudflared service install` does it for us).
+```
+sudo systemctl enable cloudflared.service
+sudo systemctl start cloudflared.service
+```
+
+You can verify the status with
+```bash
+systemctl status cloudflared.service
+```
+
+### Set up the forwarding
+Create a tunnel at
+https://one.dash.cloudflare.com/aa65eefaafad855c94b5b2b237e6dcc3/networks/tunnels
+
+Configure the public hostname sign.toit.io to point to the service
+http://localhost:9876.
+
 ## Service
-We are using 'screen' to keep the sign-service running when the ssh sessions ends.
+Copy the `toit-sign.service.template` to `toit-sign.service` and
+adjust it (replacing the username, and maybe the location of the
+script).
 
-The signing service isn't yet started automatically.
-
-Run
-```
-screen -d -m -S sign sign/start.sh
-```
-
-Use `screen -ls` to see all screens that are already running, and use
-`screen -d -r SESSION` to attach to it (detaching first if necessary).
-
-Example:
-```
-$ screen -ls
-There is a screen on:
-        35329.sign      (Detached)
-1 Socket in /home/flo/.screen.
-
-$ screen -d -r sign
+Copy the service script to /etc/systemd/system/
+```bash
+sudo cp toit-sign.service /etc/systemd/system
 ```
 
-### Detach
-Use ctrl-a,ctrl-d to leave a screen session without terminating it.
+Reload the systemd daemon to register the new service:
+```bash
+sudo systemctl daemon-reload
+```
+
+Enable and start the service. Then check if it is running correctly.
+```bash
+sudo systemctl enable toit-sign.service
+sudo systemctl start toit-sign.service
+sudo systemctl status toit-sign.service
+```
