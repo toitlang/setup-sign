@@ -20,6 +20,18 @@ You can verify the status with
 systemctl status cloudflared.service
 ```
 
+### Store the credentials
+Save the pin (password for the smart-card) in a file `pin.secret`.
+
+Store the server password (used by the signing action) in `password.secret`.
+
+
+### Install the signing server
+Compile the `main.toit` from
+https://github.com/toitlang/action-sign-server/tree/main/server
+and save it as `server`. The [start-script](./start.sh) will run it
+with the correct parameters, using the `pin.secret` and `password.secret`.
+
 ### Set up the forwarding
 Create a tunnel at
 https://one.dash.cloudflare.com/aa65eefaafad855c94b5b2b237e6dcc3/networks/tunnels
