@@ -25,7 +25,6 @@ Save the pin (password for the smart-card) in a file `pin.secret`.
 
 Store the server password (used by the signing action) in `password.secret`.
 
-
 ### Install the signing server
 Compile the `main.toit` from
 https://github.com/toitlang/action-sign-server/tree/main/server
