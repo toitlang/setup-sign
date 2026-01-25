@@ -8,7 +8,7 @@ certum_sh="$script_dir/certum.sh"
 pin_secret="$script_dir/pin.secret"
 pkcs11_so="$script_dir/manager/sc30pkcs11-3.0.6.68-MS.so"
 certificate="$script_dir/certificate.pem"
-key=d7c78f453acfaa35791f0232f351465c6d16ab94
+key=key="pkcs11:token=common%20profile;id=%D7%C7%8F%45%3A%CF%AA%35%79%1F%02%32%F3%51%46%5C%6D%16%AB%94;type=private"
 
 $script_dir/server \
     --verbosity-level=debug \
