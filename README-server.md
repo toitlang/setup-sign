@@ -59,3 +59,8 @@ sudo systemctl enable toit-sign.service
 sudo systemctl start toit-sign.service
 sudo systemctl status toit-sign.service
 ```
+
+## Debug
+```bash
+journalctl -u toit-sign.service --since "2026-02-21"
+```
